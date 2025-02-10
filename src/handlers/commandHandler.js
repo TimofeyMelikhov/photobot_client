@@ -118,11 +118,9 @@ export const confirmDeleteProfile = async (ctx, userId) => {
       : "distributors";
 
   try {
-    const user = await Axios.delete(`${tableName}/delete`, {
-      data: {
-        id: userId,
-      },
-    }).then((res) => res.data);
+    const user = await Axios.delete(`${tableName}/delete/${userId}`).then(
+      (res) => res.data
+    );
 
     if (!user) {
       return ctx.reply(`Пользователь уже удалён или не существует.`, {
