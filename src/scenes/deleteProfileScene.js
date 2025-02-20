@@ -12,6 +12,13 @@ import {
 export const deleteProfileScene = new Scenes.BaseScene("deleteProfileScene");
 
 deleteProfileScene.enter(async (ctx) => {
+  const loadingMessage = await ctx.reply("⌛ Пожалуйста, подождите...", {
+    reply_markup: { remove_keyboard: true },
+    disable_notification: true,
+  });
+  await ctx.deleteMessage(loadingMessage.message_id).catch((error) => {
+    console.error("Ошибка при удалении сообщения о загрузке:", error.message);
+  });
   await handleDeleteProfile(ctx);
 });
 

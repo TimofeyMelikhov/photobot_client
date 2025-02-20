@@ -57,9 +57,9 @@ distributorScene.enter(async (ctx) => {
   });
 });
 
-distributorScene.hears("📸 Список фотографов", loaderMiddleware, (ctx) => {
+distributorScene.hears("📸 Список фотографов", async (ctx) => {
   ctx.session.isReturning = true;
-  ctx.scene.enter("distributorPhotographersScene");
+  await ctx.scene.enter("distributorPhotographersScene");
 });
 
 distributorScene.hears(
