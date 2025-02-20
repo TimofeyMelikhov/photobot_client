@@ -5,7 +5,10 @@ import {
   createReferalLink,
 } from "../handlers/distributorHandlers.js";
 import { loaderMiddleware } from "../middleware/preloader.js";
-import { deletedLastMessage } from "../handlers/keyboards.js";
+import {
+  deletedLastMessage,
+  distributorMenuKeyboard,
+} from "../handlers/keyboards.js";
 import { sessionMiddleware } from "../middleware/sessionMiddleware.js";
 
 export const distributorPhotographersScene = new Scenes.BaseScene(
@@ -15,15 +18,27 @@ export const distributorPhotographersScene = new Scenes.BaseScene(
 distributorPhotographersScene.use(sessionMiddleware);
 
 distributorPhotographersScene.enter(async (ctx) => {
-  const photografers = await showPhotographers(ctx, 1);
-  if (!photografers) {
+  const loadingMessage = await ctx.reply("⌛ Пожалуйста, подождите...", {
+    reply_markup: { remove_keyboard: true },
+    disable_notification: true,
+  });
+
+  // Отправляем список фотографов
+  const photographers = await showPhotographers(ctx, 1);
+
+  if (!photographers) {
     if (ctx.session.previousScene) {
       const previousScene = ctx.session.previousScene;
       delete ctx.session.previousScene;
-      ctx.scene.enter(previousScene);
+      return ctx.scene.enter(previousScene);
     }
-    await ctx.scene.leave();
+    return ctx.scene.leave();
   }
+
+  // Удаляем сообщение о загрузке
+  await ctx.deleteMessage(loadingMessage.message_id).catch((error) => {
+    console.error("Ошибка при удалении сообщения о загрузке:", error.message);
+  });
 });
 
 distributorPhotographersScene.action(
@@ -59,9 +74,12 @@ distributorPhotographersScene.action("show_menu", async (ctx) => {
     if (ctx.session.previousScene) {
       const previousScene = ctx.session.previousScene;
       delete ctx.session.previousScene; // Очищаем сохраненную сцену
+      await ctx.reply("Вы вернулись в главное меню", {
+        reply_markup: distributorMenuKeyboard.reply_markup,
+        disable_notification: true,
+      });
       ctx.scene.enter(previousScene); // Переходим в предыдущую сцену
     }
-    // Выходим из текущей сцены и возвращаемся в предыдущую
     await ctx.scene.leave();
   } catch (error) {
     console.error("Ошибка в show_menu:", error.message);

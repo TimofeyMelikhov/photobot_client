@@ -8,21 +8,21 @@ export const sessionMiddleware = async (ctx, next) => {
   if (!ctx.session.userData) {
     const telegramId = ctx.from.id;
 
-    const isPhotographer = await getPhotographer("tg_user_id", telegramId);
+    // const isPhotographer = await getPhotographer("tg_user_id", telegramId);
 
-    if (isPhotographer) {
+    // if (isPhotographer) {
+    //   ctx.session.userData = {
+    //     role: "photographer",
+    //     ...isPhotographer,
+    //   };
+    // } else {
+    // }
+    const isDistributor = await getDistributor(telegramId);
+    if (isDistributor) {
       ctx.session.userData = {
-        role: "photographer",
-        ...isPhotographer,
+        role: "distributor",
+        ...isDistributor,
       };
-    } else {
-      const isDistributor = await getDistributor(telegramId);
-      if (isDistributor) {
-        ctx.session.userData = {
-          role: "distributor",
-          ...isDistributor,
-        };
-      }
     }
   }
 

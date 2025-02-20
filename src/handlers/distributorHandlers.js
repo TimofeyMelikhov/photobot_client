@@ -107,7 +107,9 @@ export const showPhotographers = async (ctx, page) => {
     } else {
       await ctx.reply(message, {
         disable_notification: true,
-        reply_markup: Markup.inlineKeyboard(buttons).reply_markup,
+        reply_markup: {
+          inline_keyboard: buttons,
+        },
       });
     }
     return photographers;

@@ -45,7 +45,6 @@ bot.hears("👥 Клиент", async (ctx) => ctx.scene.enter("distributorScene"
 bot.hears("❌ Удалить профиль", async (ctx) => {
   ctx.scene.enter("deleteProfileScene");
 });
-
 bot.action(/confirmClient_(\d+)/, async (ctx) => {
   const clientId = ctx.match[1];
   await confirmedClients(ctx, clientId);
